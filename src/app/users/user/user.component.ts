@@ -1,28 +1,34 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-user',
   templateUrl: './user.component.html',
   styleUrls: ['./user.component.css']
 })
-export class UserComponent implements OnInit {
-  user: {id: number, name: string};
+export class UserComponent implements OnInit, OnDestroy {
+  user: { id: number, name: string };
+  paramsSubscribption: Subscription;
+  constructor(private route: ActivatedRoute) { }
 
-  constructor(private route:ActivatedRoute) { }
 
   ngOnInit() {
-    this.user={
+    this.user = {
       id: this.route.snapshot.params['id'],
       name: this.route.snapshot.params['name']
     };
     //this code will not be executed when the ngonit called but only when the params changed like when id changes
-    this.route.params.subscribe(
-      (params: Params)=>{
-        this.user.id= params['id'];
-        this.user.name= params['name'];
+    this.paramsSubscribption = this.route.params.subscribe(
+      (params: Params) => {
+        this.user.id = params['id'];
+        this.user.name = params['name'];
       }
     )
+  }
+
+  ngOnDestroy() {
+    this.paramsSubscribption.unsubscribe();
   }
 
 }
